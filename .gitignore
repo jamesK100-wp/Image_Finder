@@ -1,0 +1,31 @@
+# Secrets
+.env
+web_jobs/
+web_shared_jobs/
+.share_access
+tools/cloudflared.exe
+share_url.txt
+.publish_Image_Finder/
+restaurants.xlsx
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+
+# Runtime
+logs/*.log
+progress/progress.json
+progress/photo_classifications.json
+progress/*.tmp
+
+# Generated output
+Restaurant_Images/
+output/*.xlsx
+.model_cache/
+Selected_Restaurant_Images/
+Enhanced_Restaurant_Images/
+Enhanced_Restaurant_Images_16x9/
+output/enhancement_report_16x9.json
+output/enhancement_report.json

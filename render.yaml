@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: image-finder
+    runtime: docker
+    plan: standard
+    healthCheckPath: /healthz
+    numInstances: 1
+    disk:
+      name: image-finder-data
+      mountPath: /var/data
+      sizeGB: 50
+    envVars:
+      - key: DATA_DIR
+        value: /var/data
+      - key: APP_USERNAME
+        value: owner
+      - key: APP_PASSWORD
+        sync: false
+      - key: GOOGLE_API_KEY
+        sync: false

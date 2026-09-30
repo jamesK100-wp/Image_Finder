@@ -7,7 +7,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
 MODEL_ID = "openai/clip-vit-base-patch32"
-MODEL_CACHE_DIR = BASE_DIR / ".model_cache"
+MODEL_CACHE_DIR = Path(os.environ.get("DATA_DIR", str(BASE_DIR))) / ".model_cache"
 PROMPTS = {
     "ambience": [
         "a photo of restaurant seating arrangements with dining tables and chairs",

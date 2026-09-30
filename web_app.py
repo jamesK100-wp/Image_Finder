@@ -13,7 +13,7 @@ from flask import Flask, abort, jsonify, render_template, request, send_file
 from dotenv import load_dotenv
 
 BASE = Path(__file__).resolve().parent
-JOBS = BASE / "web_jobs"
+JOBS = Path(os.environ.get("DATA_DIR", str(BASE))) / "web_jobs"
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 20 * 1024 * 1024
 LOCK = threading.Lock()
@@ -67,7 +67,8 @@ def process_job(folder, wide):
 def local_only():
     # Browser requests to this local service must come from its own origin.
     hostname = request.host.split(":")[0]
-    shared_host = app.config.get("PUBLIC_SHARE", False) and hostname.endswith(".trycloudflare.com")
+    shared_host = ((app.config.get("PUBLIC_SHARE", False) and hostname.endswith(".trycloudflare.com"))
+                   or hostname == os.environ.get("RENDER_EXTERNAL_HOSTNAME", ""))
     if hostname not in {"127.0.0.1", "localhost"} and not shared_host:
         abort(403)
     expected_origin = "https://" + request.host if shared_host else request.host_url.rstrip("/")
@@ -106,6 +107,7 @@ def create_job():
             LOCK.release()
             return jsonify(error="Unable to read this workbook. Use a valid .xlsx with a Restaurant Name column and at least one row."), 400
         save_status(folder, state="queued", message=f"Queued {len(frame)} restaurants.")
+        (folder / "options.json").write_text(json.dumps({"wide": request.form.get("format") == "wide"}))
         threading.Thread(target=process_job, args=(folder, request.form.get("format") == "wide"), daemon=True).start()
         return jsonify(id=folder.name), 202
     except Exception:
